@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>스팸링크누르면5억5천줌</title>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&family=Black+Han+Sans&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Gowun Dodum', sans-serif;
+    color: #fff; overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+  canvas { position: fixed; inset: 0; pointer-events: none; z-index: 5; }
+
+  /* ===== 1단계: 수상한 당첨 페이지 ===== */
+  #spam {
+    position: fixed; inset: 0; z-index: 2;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 24px;
+    background: repeating-conic-gradient(from 0deg at 50% 40%, #ffdd00 0 10deg, #ffb800 10deg 20deg);
+    color: #c40000;
+    transition: opacity .5s, transform .5s;
+  }
+  #spam.hide { opacity: 0; transform: scale(1.3); pointer-events: none; }
+  .badge {
+    font-family: 'Black Han Sans', sans-serif;
+    background: #c40000; color: #fff200; padding: 6px 16px; border-radius: 6px;
+    font-size: 18px; animation: blink .5s steps(2) infinite; margin-bottom: 18px;
+  }
+  @keyframes blink { 50% { opacity: .2; } }
+  .money { font-size: 64px; animation: bounce .7s infinite alternate; }
+  @keyframes bounce { to { transform: translateY(-12px) rotate(6deg); } }
+  .big {
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: clamp(34px, 10vw, 72px); line-height: 1.15; margin: 10px 0 6px;
+    -webkit-text-stroke: 2px #fff; text-shadow: 4px 4px 0 #7a0000;
+  }
+  .big em { font-style: normal; color: #0047ff; display: block; font-size: 1.25em; }
+  .congrats { font-family: 'Jua', sans-serif; font-size: clamp(20px, 5.5vw, 30px); color: #222; }
+  .bank {
+    margin-top: 22px; background: #fff; color: #222; border: 3px dashed #c40000;
+    border-radius: 12px; padding: 14px 18px; font-size: clamp(15px, 4vw, 18px); line-height: 1.6;
+    max-width: 360px;
+  }
+  .bank b { color: #c40000; letter-spacing: 1px; }
+  .claim {
+    margin-top: 24px; font-family: 'Black Han Sans', sans-serif; font-size: 22px;
+    padding: 14px 32px; border-radius: 999px; border: none; cursor: pointer;
+    background: #00b900; color: #fff; box-shadow: 0 6px 0 #006b00;
+    animation: pulse 1s infinite;
+  }
+  .claim:active { transform: translateY(4px); box-shadow: 0 2px 0 #006b00; }
+  @keyframes pulse { 50% { transform: scale(1.08); } }
+  .fine { margin-top: 14px; font-size: 11px; color: #7a4a00; opacity: .8; }
+
+  /* ===== 2단계: 진짜 메시지 ===== */
+  #message {
+    position: fixed; inset: 0; z-index: 3;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 24px;
+    background: radial-gradient(circle at 50% 30%, #3a1f5c 0%, #140a28 75%);
+    opacity: 0; pointer-events: none; transition: opacity .8s .2s;
+  }
+  #message.show { opacity: 1; pointer-events: auto; }
+  .stars span {
+    position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%;
+    opacity: .6; animation: twinkle 3s infinite ease-in-out;
+  }
+  @keyframes twinkle { 50% { opacity: .1; } }
+  .cake { font-size: 72px; margin-bottom: 10px; position: relative; }
+  h1 {
+    position: relative;
+    font-family: 'Jua', sans-serif; font-size: clamp(36px, 10vw, 76px); line-height: 1.25;
+    background: linear-gradient(90deg, #ffd1e8, #ffe58a, #a8f0ff, #ffd1e8);
+    background-size: 300% 100%;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: shine 4s linear infinite;
+  }
+  h1 .line { display: block; opacity: 0; transform: translateY(30px); }
+  #message.show h1 .line { animation: rise .8s forwards; }
+  #message.show h1 .line:nth-child(2) { animation-delay: .5s; }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+  @keyframes shine { to { background-position: 300% 0; } }
+  .sub, .from { position: relative; opacity: 0; }
+  .sub { margin-top: 24px; font-size: clamp(17px, 4.5vw, 21px); line-height: 1.8; }
+  .from { margin-top: 22px; font-family: 'Jua', sans-serif; font-size: clamp(16px, 4.2vw, 20px); color: #ffd1e8; }
+  #message.show .sub { animation: rise .8s 1.2s forwards; }
+  #message.show .from { animation: rise .8s 1.9s forwards; }
+  .again {
+    position: relative; margin-top: 30px; font-family: 'Jua', sans-serif; font-size: 16px;
+    padding: 10px 24px; border-radius: 999px; border: 1px solid rgba(255,255,255,.4);
+    background: rgba(255,255,255,.1); color: #fff; cursor: pointer; opacity: 0;
+  }
+  #message.show .again { animation: rise .8s 2.4s forwards; }
+</style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+
+<div id="spam">
+  <div class="badge">⚠️ 긴급 당첨 알림 ⚠️</div>
+  <div class="money">💰💸💰</div>
+  <div class="big">축하합니다!<em>5억 5천</em>의 주인공!</div>
+  <p class="congrats">바로 당신이 선정되었습니다 🎉</p>
+  <button class="claim" id="claim">💵 5억5천 받기</button>
+  <p class="fine">※ 본 당첨은 100% 진짜(?)입니다</p>
+</div>
+
+<div id="message">
+  <div class="stars" id="stars"></div>
+  <div class="cake">🎂</div>
+  <h1><span class="line">공주 이리링</span><span class="line">생일 축 하 해 🎂</span></h1>
+  <p class="sub">오늘 칭구들과 최고의 하루가 되,<br>나없이 조금 허전한건 남겨둬 .</p>
+  <p class="from">From 의주부인휘고니</p>
+  <button class="again" id="again">🎉 한 번 더</button>
+</div>
+
+<script>
+  const stars = document.getElementById('stars');
+  for (let i = 0; i < 60; i++) {
+    const s = document.createElement('span');
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.animationDelay = Math.random() * 3 + 's';
+    stars.appendChild(s);
+  }
+
+  const cv = document.getElementById('confetti');
+  const ctx = cv.getContext('2d');
+  let W, H, parts = [], running = false, opened = false;
+  function resize() { W = cv.width = innerWidth; H = cv.height = innerHeight; }
+  addEventListener('resize', resize); resize();
+  const colors = ['#ff8fc7', '#ffe066', '#7ee0ff', '#b69cff', '#7dffb2', '#ffffff'];
+
+  function piece(x, y, vx, vy) {
+    return { x, y, vx, vy, size: Math.random() * 7 + 4, rot: Math.random() * Math.PI,
+      vr: (Math.random() - 0.5) * 0.3, color: colors[(Math.random() * colors.length) | 0] };
+  }
+  function burst(n) {
+    for (let i = 0; i < n; i++)
+      parts.push(piece(W / 2, H * 0.4, (Math.random() - 0.5) * 16, Math.random() * -15 - 4));
+    if (!running) { running = true; requestAnimationFrame(tick); }
+  }
+  function tick() {
+    ctx.clearRect(0, 0, W, H);
+    if (opened && parts.length < 220)
+      for (let i = 0; i < 2; i++)
+        parts.push(piece(Math.random() * W, -10, (Math.random() - 0.5) * 2, Math.random() * 2 + 1));
+    for (const p of parts) {
+      p.vy = Math.min(p.vy + 0.25, 4); p.vx *= 0.99;
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+      ctx.fillStyle = p.color; ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+      ctx.restore();
+    }
+    parts = parts.filter(p => p.y < H + 20);
+    requestAnimationFrame(tick);
+  }
+
+  document.getElementById('claim').addEventListener('click', () => {
+    if (opened) return;
+    opened = true;
+    document.getElementById('spam').classList.add('hide');
+    document.getElementById('message').classList.add('show');
+    burst(180);
+    setTimeout(() => burst(120), 400);
+  });
+  document.getElementById('again').addEventListener('click', () => burst(200));
+</script>
+</body>
+</html>
